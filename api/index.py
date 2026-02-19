@@ -13,6 +13,7 @@ app.add_middleware(
     allow_origins=["*"],
     allow_methods=["POST"],
     allow_headers=["*"],
+    allow_credentials=True,
 )
 
 # Load JSON file
