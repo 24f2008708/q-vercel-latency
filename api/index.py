@@ -27,11 +27,10 @@ class RequestBody(BaseModel):
 @app.post("/")
 def analyze(request: RequestBody):
 
-    result = {}
+    regions_result = {}
 
     for region in request.regions:
 
-        # filter records for region
         region_data = [r for r in data if r["region"] == region]
 
         if not region_data:
@@ -40,11 +39,13 @@ def analyze(request: RequestBody):
         latencies = [r["latency_ms"] for r in region_data]
         uptimes = [r["uptime_pct"] for r in region_data]
 
-        result[region] = {
+        regions_result[region] = {
             "avg_latency": round(sum(latencies) / len(latencies), 2),
             "p95_latency": round(float(np.percentile(latencies, 95)), 2),
             "avg_uptime": round(sum(uptimes) / len(uptimes), 2),
             "breaches": sum(1 for l in latencies if l > request.threshold_ms)
         }
 
-    return result
+    return {
+        "regions": regions_result
+    }
